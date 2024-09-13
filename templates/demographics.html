@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Political Compass Quiz - Demographics</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="container max-w-2xl mx-auto px-4 py-8">
@@ -12,21 +13,21 @@
         
         <div class="bg-white rounded-lg shadow-md p-8">
             <form id="demographics-form" action="{{ url_for('submit_demographics') }}" method="POST">
-                <div class="mb-4">
+                <div class="form-field">
                     <label for="age" class="block text-gray-700 font-bold mb-2">Age:</label>
                     <input type="number" id="age" name="age" min="0" max="120" required class="w-full px-3 py-2 border rounded-lg">
                 </div>
-                <div class="mb-4">
+                <div class="form-field">
                     <label for="sex" class="block text-gray-700 font-bold mb-2">Sex:</label>
                     <select id="sex" name="sex" required class="w-full px-3 py-2 border rounded-lg">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
                 </div>
-                <div class="mb-4">
+                <div class="form-field">
                     <label for="education" class="block text-gray-700 font-bold mb-2">Highest Degree of Education:</label>
                     <select id="education" name="education" required class="w-full px-3 py-2 border rounded-lg">
-                        <option value="">Select your highest degree</option>
+                        <option value="" disabled selected class="text-gray-500">Select your highest degree</option>
                         <option value="high_school">High School</option>
                         <option value="bachelors">Bachelor's Degree</option>
                         <option value="masters">Master's Degree</option>
@@ -34,14 +35,14 @@
                         <option value="other">Other</option>
                     </select>
                 </div>
-                <div class="mb-4">
+                <div class="form-field">
                     <label for="city" class="block text-gray-700 font-bold mb-2">City:</label>
-                    <input type="text" id="city" name="city" required class="w-full px-3 py-2 border rounded-lg" list="municipalities">
-                    <datalist id="municipalities">
+                    <select id="city" name="city" required class="w-full px-3 py-2 border rounded-lg">
+                        <option value="" disabled selected>Select your city</option>
                         {% for municipality in municipalities %}
-                        <option value="{{ municipality }}">
+                        <option value="{{ municipality }}">{{ municipality }}</option>
                         {% endfor %}
-                    </datalist>
+                    </select>
                 </div>
                 <div class="flex justify-center">
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">Next</button>
@@ -53,5 +54,7 @@
     <footer class="fixed bottom-0 left-0 right-0 p-4 bg-white shadow-md text-center text-gray-500">
         <p>Follow us on Twitter: <a href="https://twitter.com/elonmusk" target="_blank" class="text-blue-500 hover:underline">@elonmusk</a></p>
     </footer>
+
+    <script src="{{ url_for('static', filename='js/demographics.js') }}"></script>
 </body>
 </html>
