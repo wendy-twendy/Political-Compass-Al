@@ -21,40 +21,51 @@ function displayResults(result) {
     let libertarianAuthoritarianLabel = result.libertarian_authoritarian < 0 ? 'Libertarian' : 'Authoritarian';
     
     resultDescription.innerHTML = `
-        <h2 class="text-2xl font-bold mb-4">Your Political Compass Result</h2>
-        <p class="text-lg mb-2">Economic: <span class="font-semibold">${result.economic.toFixed(2)}</span> (${economicLabel})</p>
-        <p class="text-lg mb-4">Social: <span class="font-semibold">${result.libertarian_authoritarian.toFixed(2)}</span> (${libertarianAuthoritarianLabel})</p>
-        
-        <h3 class="text-xl font-semibold mt-6 mb-2">Your Quadrant: ${result.quadrant}</h3>
-        <p class="mb-4">${result.explanation}</p>
-        
-        <h3 class="text-xl font-semibold mt-6 mb-2">Comparisons</h3>
-        <div class="bg-gray-100 p-4 rounded-lg mb-4">
-            <h4 class="text-lg font-semibold mb-2">Average User</h4>
-            <p>Economic: <span class="font-semibold">${result.average_economic.toFixed(2)}</span></p>
-            <p>Social: <span class="font-semibold">${result.average_libertarian_authoritarian.toFixed(2)}</span></p>
-        </div>
-        
-        <h4 class="text-lg font-semibold mb-2">Famous Political Figures</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            ${Object.entries(result.famous_figures).map(([name, position]) => `
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h5 class="font-semibold mb-2">${name}</h5>
-                    <p>Economic: <span class="font-semibold">${position[0].toFixed(2)}</span></p>
-                    <p>Social: <span class="font-semibold">${position[1].toFixed(2)}</span></p>
-                </div>
-            `).join('')}
-        </div>
+        <p class="text-lg font-semibold mb-2">Your political compass position:</p>
+        <p>Economic: ${result.economic.toFixed(2)} (${economicLabel})</p>
+        <p>Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})</p>
+        <h3 class="text-xl font-semibold mt-4">Your Quadrant: ${result.quadrant}</h3>
+        <p class="mt-2 whitespace-pre-line">${result.explanation}</p>
     `;
 
     // Add social media sharing buttons
     const shareContainer = document.createElement('div');
-    shareContainer.className = 'flex justify-center mt-8 space-x-4';
+    shareContainer.className = 'flex justify-center mt-4 space-x-4';
     shareContainer.innerHTML = `
-        <button onclick="shareOnTwitter()" class="bg-blue-400 text-white px-6 py-2 rounded-full hover:bg-blue-500 transition duration-200">Share on Twitter</button>
-        <button onclick="shareOnLinkedIn()" class="bg-blue-800 text-white px-6 py-2 rounded-full hover:bg-blue-900 transition duration-200">Share on LinkedIn</button>
+        <button onclick="shareOnTwitter()" class="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 transition duration-200">Share on Twitter</button>
+        <button onclick="shareOnLinkedIn()" class="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200">Share on LinkedIn</button>
     `;
     resultDescription.parentNode.insertBefore(shareContainer, resultDescription.nextSibling);
 }
 
-// ... (rest of the code remains unchanged)
+function downloadImage() {
+    Plotly.toImage('plotly-chart', {format: 'png', width: 800, height: 800}).then(function(dataUrl) {
+        var link = document.createElement('a');
+        link.download = 'political_compass.png';
+        link.href = dataUrl;
+        link.click();
+    });
+}
+
+function encodeAnswers() {
+    return window.userAnswers ? window.userAnswers.join(',') : '';
+}
+
+function shareOnTwitter() {
+    const answers = encodeAnswers();
+    const url = encodeURIComponent(window.location.origin + '/shared_result?economic=' + window.quizResult.economic.toFixed(2) + '&libertarian_authoritarian=' + window.quizResult.libertarian_authoritarian.toFixed(2) + '&answers=' + answers);
+    const text = encodeURIComponent("Check out my Political Compass Quiz result!");
+    const shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+    window.open(shareUrl, '_blank');
+}
+
+function shareOnLinkedIn() {
+    const answers = encodeAnswers();
+    const url = encodeURIComponent(window.location.origin + '/shared_result?economic=' + window.quizResult.economic.toFixed(2) + '&libertarian_authoritarian=' + window.quizResult.libertarian_authoritarian.toFixed(2) + '&answers=' + answers);
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+    window.open(shareUrl, '_blank');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('download-button').addEventListener('click', downloadImage);
+});
