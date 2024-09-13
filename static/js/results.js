@@ -26,6 +26,14 @@ function displayResults(result) {
         <p>Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})</p>
         <h3 class="text-xl font-semibold mt-4">Your Quadrant: ${result.quadrant}</h3>
         <p class="mt-2 whitespace-pre-line">${result.explanation}</p>
+        <h3 class="text-xl font-semibold mt-4">Comparisons:</h3>
+        <p>Average Position: Economic: ${result.average_economic.toFixed(2)}, Social: ${result.average_libertarian_authoritarian.toFixed(2)}</p>
+        <h4 class="text-lg font-semibold mt-2">Famous Political Figures:</h4>
+        <ul class="list-disc list-inside">
+            ${Object.entries(result.famous_figures).map(([name, position]) => 
+                `<li>${name}: Economic: ${position[0].toFixed(2)}, Social: ${position[1].toFixed(2)}</li>`
+            ).join('')}
+        </ul>
     `;
 
     // Add social media sharing buttons

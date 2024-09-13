@@ -11,7 +11,10 @@
         <h1 class="text-4xl font-bold mb-6 text-center text-gray-800">Demographic Information</h1>
         
         <div class="bg-white rounded-lg shadow-md p-8">
-            <form id="demographics-form" action="{{ url_for('submit_demographics') }}" method="POST">
+            <p class="text-sm text-gray-600 mb-4">
+                We collect this information to provide statistical comparisons with users who have similar demographics after you complete the quiz. Your data will be kept anonymous and secure.
+            </p>
+            <form id="user-info-form" action="{{ url_for('submit_demographics') }}" method="POST">
                 <div class="mb-4">
                     <label for="age" class="block text-gray-700 font-bold mb-2">Age:</label>
                     <input type="number" id="age" name="age" min="0" max="120" class="w-full px-3 py-2 border rounded-lg">
@@ -24,14 +27,12 @@
                     <label for="gender" class="block text-gray-700 font-bold mb-2">Gender:</label>
                     <select id="gender" name="gender" class="w-full px-3 py-2 border rounded-lg">
                         <option value="">Prefer not to say</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
+                        <option value="man">Man</option>
+                        <option value="woman">Woman</option>
                     </select>
                 </div>
                 <div class="flex justify-between">
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">Next</button>
-                    <a href="{{ url_for('quiz') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition duration-200">Skip</a>
                 </div>
             </form>
         </div>
