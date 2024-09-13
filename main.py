@@ -1,9 +1,14 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import plotly.graph_objects as go
 import logging
+from generate_preview_image import generate_preview_image
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'  # Add a secret key for session management
 logging.basicConfig(level=logging.DEBUG)
+
+# Generate the preview image when the server starts
+generate_preview_image()
 
 # Updated Quiz questions
 questions = [
@@ -37,6 +42,67 @@ def home():
 def quiz():
     return render_template('quiz.html', questions=questions)
 
+def generate_plot(economic_score, libertarian_authoritarian_score):
+    fig = go.Figure()
+    
+    # Add quadrants with updated colors
+    quadrants = [
+        {"name": "Authoritarian Left", "x": [-10, 0, 0, -10], "y": [0, 0, 10, 10], "color": "#ff7575"},
+        {"name": "Authoritarian Right", "x": [0, 10, 10, 0], "y": [0, 0, 10, 10], "color": "#42aaff"},
+        {"name": "Libertarian Left", "x": [-10, 0, 0, -10], "y": [0, 0, -10, -10], "color": "#9aed97"},
+        {"name": "Libertarian Right", "x": [0, 10, 10, 0], "y": [0, 0, -10, -10], "color": "#c09aec"}
+    ]
+    
+    for quadrant in quadrants:
+        fig.add_trace(go.Scatter(
+            x=quadrant["x"], y=quadrant["y"],
+            fill="toself",
+            fillcolor=quadrant["color"],
+            line=dict(color="rgba(0,0,0,0)"),
+            showlegend=False,
+            hoverinfo="skip"
+        ))
+    
+    # Update grid lines to stay within [-10, 10] range
+    for i in range(-4, 5):
+        fig.add_shape(type="line", x0=-10, x1=10, y0=i*2.5, y1=i*2.5, line=dict(color="rgba(255,255,255,0.8)", width=1))
+        fig.add_shape(type="line", x0=i*2.5, x1=i*2.5, y0=-10, y1=10, line=dict(color="rgba(255,255,255,0.8)", width=1))
+    
+    # Add black center lines
+    fig.add_shape(type="line", x0=0, x1=0, y0=-10, y1=10, line=dict(color="black", width=2))
+    fig.add_shape(type="line", x0=-10, x1=10, y0=0, y1=0, line=dict(color="black", width=2))
+    
+    # Update layout with exact [-10, 10] plot range
+    fig.update_layout(
+        xaxis=dict(range=[-10, 10], zeroline=False, showticklabels=False),
+        yaxis=dict(range=[-10, 10], zeroline=False, showticklabels=False),
+        showlegend=False,
+        width=700,
+        height=700,
+        margin=dict(l=80, r=80, t=80, b=80),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)"
+    )
+    
+    # Add axis labels with adjusted positions, font size, and weight
+    fig.add_annotation(x=-10, y=0, text="Left", showarrow=False, xanchor="right", yanchor="middle", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
+    fig.add_annotation(x=10, y=0, text="Right", showarrow=False, xanchor="left", yanchor="middle", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
+    fig.add_annotation(x=0, y=10, text="Authoritarian", showarrow=False, xanchor="center", yanchor="bottom", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
+    fig.add_annotation(x=0, y=-10, text="Libertarian", showarrow=False, xanchor="center", yanchor="top", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
+    
+    # Add user's position as the last element
+    fig.add_trace(go.Scatter(
+        x=[economic_score],
+        y=[libertarian_authoritarian_score],
+        mode="markers+text",
+        marker=dict(color="red", size=12, symbol="square"),
+        text=["You"],
+        textposition="top center",
+        textfont=dict(size=12, color="black")
+    ))
+    
+    return fig.to_json()
+
 @app.route('/submit_quiz', methods=['POST'])
 def submit_quiz():
     try:
@@ -68,66 +134,11 @@ def submit_quiz():
         
         logging.debug(f"Calculated scores: economic={economic_score}, libertarian_authoritarian={libertarian_authoritarian_score}")
         
-        fig = go.Figure()
+        # Generate the plot using the calculated scores
+        plot_json = generate_plot(economic_score, libertarian_authoritarian_score)
         
-        # Add quadrants with updated colors
-        quadrants = [
-            {"name": "Authoritarian Left", "x": [-10, 0, 0, -10], "y": [0, 0, 10, 10], "color": "#ff7575"},
-            {"name": "Authoritarian Right", "x": [0, 10, 10, 0], "y": [0, 0, 10, 10], "color": "#42aaff"},
-            {"name": "Libertarian Left", "x": [-10, 0, 0, -10], "y": [0, 0, -10, -10], "color": "#9aed97"},
-            {"name": "Libertarian Right", "x": [0, 10, 10, 0], "y": [0, 0, -10, -10], "color": "#c09aec"}
-        ]
-        
-        for quadrant in quadrants:
-            fig.add_trace(go.Scatter(
-                x=quadrant["x"], y=quadrant["y"],
-                fill="toself",
-                fillcolor=quadrant["color"],
-                line=dict(color="rgba(0,0,0,0)"),
-                showlegend=False,
-                hoverinfo="skip"
-            ))
-        
-        # Update grid lines to stay within [-10, 10] range
-        for i in range(-4, 5):
-            fig.add_shape(type="line", x0=-10, x1=10, y0=i*2.5, y1=i*2.5, line=dict(color="rgba(255,255,255,0.8)", width=1))
-            fig.add_shape(type="line", x0=i*2.5, x1=i*2.5, y0=-10, y1=10, line=dict(color="rgba(255,255,255,0.8)", width=1))
-        
-        # Add black center lines
-        fig.add_shape(type="line", x0=0, x1=0, y0=-10, y1=10, line=dict(color="black", width=2))
-        fig.add_shape(type="line", x0=-10, x1=10, y0=0, y1=0, line=dict(color="black", width=2))
-        
-        # Update layout with exact [-10, 10] plot range
-        fig.update_layout(
-            xaxis=dict(range=[-10, 10], zeroline=False, showticklabels=False),
-            yaxis=dict(range=[-10, 10], zeroline=False, showticklabels=False),
-            showlegend=False,
-            width=700,
-            height=700,
-            margin=dict(l=80, r=80, t=80, b=80),
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
-        
-        # Add axis labels with adjusted positions, font size, and weight
-        fig.add_annotation(x=-10, y=0, text="Left", showarrow=False, xanchor="right", yanchor="middle", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
-        fig.add_annotation(x=10, y=0, text="Right", showarrow=False, xanchor="left", yanchor="middle", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
-        fig.add_annotation(x=0, y=10, text="Authoritarian", showarrow=False, xanchor="center", yanchor="bottom", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
-        fig.add_annotation(x=0, y=-10, text="Libertarian", showarrow=False, xanchor="center", yanchor="top", xref="x", yref="y", font=dict(size=16, weight=900, color="black"))
-        
-        # Add user's position as the last element
-        fig.add_trace(go.Scatter(
-            x=[economic_score],
-            y=[libertarian_authoritarian_score],
-            mode="markers+text",
-            marker=dict(color="red", size=12, symbol="square"),
-            text=["You"],
-            textposition="top center",
-            textfont=dict(size=12, color="black")
-        ))
-        
-        # Convert the figure to JSON for frontend rendering
-        plot_json = fig.to_json()
+        # Store answers in session for sharing
+        session['user_answers'] = answers
         
         response = jsonify({
             'economic': economic_score,
@@ -139,6 +150,28 @@ def submit_quiz():
     except Exception as e:
         logging.exception("An error occurred while processing the quiz submission")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/shared_result')
+def shared_result():
+    try:
+        economic = float(request.args.get('economic'))
+        libertarian_authoritarian = float(request.args.get('libertarian_authoritarian'))
+        answers = request.args.get('answers')
+        if answers:
+            answers = [int(a) for a in answers.split(',')]
+        else:
+            answers = [3] * 20  # Default to neutral if not provided
+    except (TypeError, ValueError):
+        return redirect(url_for('quiz'))
+
+    plot_json = generate_plot(economic, libertarian_authoritarian)
+
+    return render_template('shared_result.html', result={
+        'economic': economic,
+        'libertarian_authoritarian': libertarian_authoritarian,
+        'plot_json': plot_json,
+        'user_answers': answers
+    }, questions=questions)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Political Compass Quiz</title>
+    <meta property="og:title" content="My Political Compass Quiz Result">
+    <meta property="og:description" content="Check out my result on the Political Compass Quiz! Where do you stand?">
+    <meta property="og:image" content="{{ url_for('static', filename='images/political_compass_preview.png', _external=True) }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta name="twitter:card" content="summary_large_image">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
@@ -12,31 +17,43 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-4xl font-bold mb-8 text-center">Political Compass Quiz</h1>
         
-        <div id="quiz-container" class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold mb-4">Answer the following questions:</h2>
+        <div id="quiz-container">
+            <h2 class="text-2xl font-semibold mb-6">Answer the following questions:</h2>
             <form id="quiz-form">
                 {% for question in questions %}
-                <div class="mb-6">
+                <div class="question-container">
                     <p class="question-text">{{ loop.index }}. {{ question }}</p>
-                    <div class="slider-wrapper">
-                        <div class="slider-container">
-                            <input type="range" name="q{{ loop.index }}" min="1" max="5" value="3" class="slider" id="q{{ loop.index }}">
-                            <div class="slider-labels">
-                                <span>Strongly Disagree</span>
-                                <span>Disagree</span>
-                                <span>Neutral</span>
-                                <span>Agree</span>
-                                <span>Strongly Agree</span>
-                            </div>
-                        </div>
+                    <div class="options-container">
+                        <label class="option">
+                            <input type="radio" name="q{{ loop.index }}" value="1" required>
+                            <span class="option-text">Strongly Disagree</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q{{ loop.index }}" value="2" required>
+                            <span class="option-text">Disagree</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q{{ loop.index }}" value="3" required checked>
+                            <span class="option-text">Neutral</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q{{ loop.index }}" value="4" required>
+                            <span class="option-text">Agree</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q{{ loop.index }}" value="5" required>
+                            <span class="option-text">Strongly Agree</span>
+                        </label>
                     </div>
                 </div>
                 {% endfor %}
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">Submit</button>
+                <div class="text-center mt-8">
+                    <button type="submit" class="submit-button">Submit</button>
+                </div>
             </form>
         </div>
         
-        <div id="results-container" class="bg-white rounded-lg shadow-md p-6 hidden">
+        <div id="results-container" class="hidden">
             <h2 class="text-2xl font-semibold mb-4 text-center">Your Political Compass Result</h2>
             <div id="plotly-chart" class="flex justify-center" style="width: 100%; padding-top: 10px; position: relative;"></div>
             <p id="result-description" class="mt-4 text-center"></p>

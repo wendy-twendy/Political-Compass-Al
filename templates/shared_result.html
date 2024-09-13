@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Political Compass Quiz - Shared Result</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <meta property="og:title" content="My Political Compass Quiz Result">
+    <meta property="og:description" content="Check out my result on the Political Compass Quiz! Where do you stand?">
+    <meta property="og:image" content="{{ url_for('static', filename='images/political_compass_preview.png', _external=True) }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-center">Political Compass Quiz - Shared Result</h1>
+        
+        <div id="results-container" class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4 text-center">Political Compass Result</h2>
+            <div id="plotly-chart" class="flex justify-center" style="width: 100%; padding-top: 10px; position: relative;"></div>
+            <p id="result-description" class="mt-4 text-center"></p>
+        </div>
+
+        <div id="answers-container" class="bg-white rounded-lg shadow-md p-6 mt-8">
+            <h2 class="text-2xl font-semibold mb-4">Answers to Quiz Questions</h2>
+            <ul>
+                {% for i in range(questions|length) %}
+                    <li class="mb-2">
+                        <strong>{{ loop.index }}. {{ questions[i] }}</strong>
+                        <br>
+                        Answer: {{ ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"][result.user_answers[i]-1] }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="text-blue-500 hover:text-blue-600">Take the Quiz Yourself</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const result = {{ result|tojson|safe }};
+            const plotlyChart = document.getElementById('plotly-chart');
+            const resultDescription = document.getElementById('result-description');
+            
+            // Parse the plot JSON and render it using Plotly
+            const plotData = JSON.parse(result.plot_json);
+            Plotly.newPlot('plotly-chart', plotData.data, plotData.layout, {
+                displayModeBar: false,
+                responsive: true,
+                staticPlot: true
+            });
+            
+            let economicLabel = result.economic < 0 ? 'Left' : 'Right';
+            let libertarianAuthoritarianLabel = result.libertarian_authoritarian < 0 ? 'Libertarian' : 'Authoritarian';
+            
+            resultDescription.textContent = `Political compass position: Economic: ${result.economic.toFixed(2)} (${economicLabel}), Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})`;
+        });
+    </script>
+</body>
+</html>

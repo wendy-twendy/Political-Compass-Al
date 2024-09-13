@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             answers.push(parseInt(answer) || 3); // Default to neutral if parsing fails
         }
+        window.userAnswers = answers;
 
         console.log('Answers:', answers);
 
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 console.log('Quiz submission successful');
                 const result = await response.json();
+                window.quizResult = result;
                 console.log('Result:', result);
                 displayResults(result);
                 quizContainer.classList.add('hidden');
@@ -52,24 +54,4 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred while submitting the quiz. Please try again.');
         }
     });
-
-    // Add event listeners for sliders to update their values
-    const sliders = document.querySelectorAll('.slider');
-    sliders.forEach(slider => {
-        slider.addEventListener('input', updateSliderValue);
-    });
 });
-
-function updateSliderValue(event) {
-    const slider = event.target;
-    const value = slider.value;
-    const labels = slider.nextElementSibling.children;
-    
-    for (let label of labels) {
-        label.style.fontWeight = 'normal';
-        label.style.color = '#555';
-    }
-    
-    labels[value - 1].style.fontWeight = 'bold';
-    labels[value - 1].style.color = '#000';
-}
