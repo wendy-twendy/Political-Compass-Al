@@ -19,7 +19,7 @@
         
         <div id="quiz-container">
             <h2 class="text-2xl font-semibold mb-6">Answer the following questions:</h2>
-            <form id="quiz-form">
+            <form id="quiz-form" action="{{ url_for('main.submit_quiz') }}" method="POST">
                 {% for question in questions %}
                 <div class="question-container">
                     <p class="question-text">{{ loop.index }}. {{ question }}</p>

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             console.log('Sending quiz data to server');
-            const response = await fetch('/submit_quiz', {
+            const response = await fetch('/main/submit_quiz', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
