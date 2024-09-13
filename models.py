@@ -1,4 +1,21 @@
-# Updated Quiz questions
+from app import db
+from datetime import datetime
+
+class UserData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    age = db.Column(db.Integer)
+    sex = db.Column(db.String(10))
+    education = db.Column(db.String(50))
+    city = db.Column(db.String(50))
+    answers = db.Column(db.JSON)
+    economic_score = db.Column(db.Float)
+    libertarian_authoritarian_score = db.Column(db.Float)
+    completion_time = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<UserData {self.id}>'
+
+# Add questions and municipalities lists here
 questions = [
     "The free market is the most effective way to distribute resources.",
     "Government intervention in the economy is necessary to protect citizens.",
