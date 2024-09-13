@@ -1,55 +1,41 @@
 function displayResults(result) {
     console.log('Displaying results:', result);
-    try {
-        const plotlyChart = document.getElementById('plotly-chart');
-        const resultDescription = document.getElementById('result-description');
-        
-        if (!plotlyChart || !resultDescription) {
-            console.error('Required DOM elements not found');
-            return;
-        }
-        
-        if (result && result.plot_json) {
-            const plotData = JSON.parse(result.plot_json);
-            Plotly.newPlot('plotly-chart', plotData.data, plotData.layout, {
-                displayModeBar: false,
-                responsive: true,
-                staticPlot: true
-            });
-        } else {
-            console.error('Invalid plot data');
-        }
-        
-        let economicLabel = result.economic < 0 ? 'Left' : 'Right';
-        let libertarianAuthoritarianLabel = result.libertarian_authoritarian < 0 ? 'Libertarian' : 'Authoritarian';
-        
-        resultDescription.innerHTML = `
-            <h3 class="text-xl font-semibold mb-2">Your Results:</h3>
-            <p>Economic: ${result.economic.toFixed(2)} (${economicLabel})</p>
-            <p>Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})</p>
-            <h3 class="text-xl font-semibold mt-4 mb-2">Your Quadrant: ${result.quadrant}</h3>
-            <p class="mb-4">${result.explanation}</p>
-            <h3 class="text-xl font-semibold mt-4 mb-2">Comparisons:</h3>
-            <p>Average Position: Economic: ${result.average_economic.toFixed(2)}, Social: ${result.average_social.toFixed(2)}</p>
-            <p>Closest Political Figure: ${result.closest_figure}</p>
-            <h4 class="text-lg font-semibold mt-2 mb-1">Top 3 Closest Figures:</h4>
-            <ul class="list-disc list-inside mb-4">
-                ${result.comparisons.map(comp => `<li>${comp.name} (Distance: ${comp.distance.toFixed(2)})</li>`).join('')}
-            </ul>
-        `;
-
-        // Add social media sharing buttons
-        const shareContainer = document.createElement('div');
-        shareContainer.className = 'flex justify-center mt-4 space-x-4';
-        shareContainer.innerHTML = `
-            <button onclick="shareOnTwitter()" class="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 transition duration-200">Share on Twitter</button>
-            <button onclick="shareOnLinkedIn()" class="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200">Share on LinkedIn</button>
-        `;
-        resultDescription.parentNode.insertBefore(shareContainer, resultDescription.nextSibling);
-    } catch (error) {
-        console.error('Error displaying results:', error);
-        alert('An error occurred while displaying the results. Please try again.');
+    window.quizResult = result; // Store the result globally
+    const plotlyChart = document.getElementById('plotly-chart');
+    const resultDescription = document.getElementById('result-description');
+    
+    if (!plotlyChart) {
+        console.error('Plotly chart container not found');
+        return;
     }
+    
+    // Parse the plot JSON and render it using Plotly
+    const plotData = JSON.parse(result.plot_json);
+    Plotly.newPlot('plotly-chart', plotData.data, plotData.layout, {
+        displayModeBar: false,
+        responsive: true,
+        staticPlot: true
+    });
+    
+    let economicLabel = result.economic < 0 ? 'Left' : 'Right';
+    let libertarianAuthoritarianLabel = result.libertarian_authoritarian < 0 ? 'Libertarian' : 'Authoritarian';
+    
+    resultDescription.innerHTML = `
+        <p class="text-lg font-semibold mb-2">Your political compass position:</p>
+        <p>Economic: ${result.economic.toFixed(2)} (${economicLabel})</p>
+        <p>Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})</p>
+        <h3 class="text-xl font-semibold mt-4">Your Quadrant: ${result.quadrant}</h3>
+        <p class="mt-2 whitespace-pre-line">${result.explanation}</p>
+    `;
+
+    // Add social media sharing buttons
+    const shareContainer = document.createElement('div');
+    shareContainer.className = 'flex justify-center mt-4 space-x-4';
+    shareContainer.innerHTML = `
+        <button onclick="shareOnTwitter()" class="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 transition duration-200">Share on Twitter</button>
+        <button onclick="shareOnLinkedIn()" class="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200">Share on LinkedIn</button>
+    `;
+    resultDescription.parentNode.insertBefore(shareContainer, resultDescription.nextSibling);
 }
 
 function downloadImage() {
