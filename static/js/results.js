@@ -28,7 +28,7 @@ function displayResults(result) {
         <p class="mt-2 whitespace-pre-line">${result.explanation}</p>
     `;
 
-    // Add comparisons if they exist
+    // Add comparisons
     if (result.comparisons && result.comparisons.average_scores && result.comparisons.famous_figures) {
         const comparisonsContainer = document.createElement('div');
         comparisonsContainer.className = 'mt-6';
