@@ -20,7 +20,13 @@ function displayResults(result) {
     let economicLabel = result.economic < 0 ? 'Left' : 'Right';
     let libertarianAuthoritarianLabel = result.libertarian_authoritarian < 0 ? 'Libertarian' : 'Authoritarian';
     
-    resultDescription.textContent = `Your political compass position is: Economic: ${result.economic.toFixed(2)} (${economicLabel}), Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})`;
+    resultDescription.innerHTML = `
+        <p class="text-lg font-semibold mb-2">Your political compass position:</p>
+        <p>Economic: ${result.economic.toFixed(2)} (${economicLabel})</p>
+        <p>Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})</p>
+        <h3 class="text-xl font-semibold mt-4">Your Quadrant: ${result.quadrant}</h3>
+        <p class="mt-2 whitespace-pre-line">${result.explanation}</p>
+    `;
 
     // Add social media sharing buttons
     const shareContainer = document.createElement('div');

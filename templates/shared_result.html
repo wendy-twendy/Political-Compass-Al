@@ -21,6 +21,10 @@
             <h2 class="text-2xl font-semibold mb-4 text-center">Political Compass Result</h2>
             <div id="plotly-chart" class="flex justify-center" style="width: 100%; padding-top: 10px; position: relative;"></div>
             <p id="result-description" class="mt-4 text-center"></p>
+            <div id="quadrant-explanation" class="mt-6">
+                <h3 class="text-xl font-semibold">Your Quadrant: <span id="quadrant-name"></span></h3>
+                <p id="quadrant-description" class="mt-2 whitespace-pre-line"></p>
+            </div>
         </div>
 
         <div id="answers-container" class="bg-white rounded-lg shadow-md p-6 mt-8">
@@ -46,6 +50,8 @@
             const result = {{ result|tojson|safe }};
             const plotlyChart = document.getElementById('plotly-chart');
             const resultDescription = document.getElementById('result-description');
+            const quadrantName = document.getElementById('quadrant-name');
+            const quadrantDescription = document.getElementById('quadrant-description');
             
             // Parse the plot JSON and render it using Plotly
             const plotData = JSON.parse(result.plot_json);
@@ -59,6 +65,9 @@
             let libertarianAuthoritarianLabel = result.libertarian_authoritarian < 0 ? 'Libertarian' : 'Authoritarian';
             
             resultDescription.textContent = `Political compass position: Economic: ${result.economic.toFixed(2)} (${economicLabel}), Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})`;
+            
+            quadrantName.textContent = result.quadrant;
+            quadrantDescription.textContent = result.explanation;
         });
     </script>
 </body>
