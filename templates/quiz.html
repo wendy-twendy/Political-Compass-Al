@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Political Compass Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-center">Political Compass Quiz</h1>
+        
+        <div id="quiz-container" class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Answer the following questions:</h2>
+            <form id="quiz-form">
+                {% for question in questions %}
+                <div class="mb-6">
+                    <p class="question-text">{{ loop.index }}. {{ question }}</p>
+                    <div class="slider-wrapper">
+                        <div class="slider-container">
+                            <input type="range" name="q{{ loop.index }}" min="1" max="5" value="3" class="slider" id="q{{ loop.index }}">
+                            <div class="slider-labels">
+                                <span>Strongly Disagree</span>
+                                <span>Disagree</span>
+                                <span>Neutral</span>
+                                <span>Agree</span>
+                                <span>Strongly Agree</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">Submit</button>
+            </form>
+        </div>
+        
+        <div id="results-container" class="bg-white rounded-lg shadow-md p-6 hidden">
+            <h2 class="text-2xl font-semibold mb-4 text-center">Your Political Compass Result</h2>
+            <div id="plotly-chart" class="flex justify-center" style="width: 100%; padding-top: 10px; position: relative;"></div>
+            <p id="result-description" class="mt-4 text-center"></p>
+            <div class="flex justify-center mt-4">
+                <button id="download-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">Download Image</button>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="text-blue-500 hover:text-blue-600">Return to Home</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/results.js') }}"></script>
+</body>
+</html>
