@@ -34,7 +34,7 @@
                     <li class="mb-2">
                         <strong>{{ loop.index }}. {{ questions[i] }}</strong>
                         <br>
-                        Answer: {{ ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"][result.user_answers[i]-1] }}
+                        Answer: {{ ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"][answers[i]-1] }}
                     </li>
                 {% endfor %}
             </ul>
@@ -47,27 +47,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const result = {{ result|tojson|safe }};
+            const economic = {{ economic }};
+            const libertarianAuthoritarian = {{ libertarian_authoritarian }};
             const plotlyChart = document.getElementById('plotly-chart');
             const resultDescription = document.getElementById('result-description');
             const quadrantName = document.getElementById('quadrant-name');
             const quadrantDescription = document.getElementById('quadrant-description');
             
             // Parse the plot JSON and render it using Plotly
-            const plotData = JSON.parse(result.plot_json);
+            const plotData = JSON.parse({{ plot_json|tojson|safe }});
             Plotly.newPlot('plotly-chart', plotData.data, plotData.layout, {
                 displayModeBar: false,
                 responsive: true,
                 staticPlot: true
             });
             
-            let economicLabel = result.economic < 0 ? 'Left' : 'Right';
-            let libertarianAuthoritarianLabel = result.libertarian_authoritarian < 0 ? 'Libertarian' : 'Authoritarian';
+            let economicLabel = economic < 0 ? 'Left' : 'Right';
+            let libertarianAuthoritarianLabel = libertarianAuthoritarian < 0 ? 'Libertarian' : 'Authoritarian';
             
-            resultDescription.textContent = `Political compass position: Economic: ${result.economic.toFixed(2)} (${economicLabel}), Social: ${result.libertarian_authoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})`;
+            resultDescription.textContent = `Political compass position: Economic: ${economic.toFixed(2)} (${economicLabel}), Social: ${libertarianAuthoritarian.toFixed(2)} (${libertarianAuthoritarianLabel})`;
             
-            quadrantName.textContent = result.quadrant;
-            quadrantDescription.textContent = result.explanation;
+            quadrantName.textContent = "{{ quadrant }}";
+            quadrantDescription.textContent = "{{ explanation }}";
         });
     </script>
 </body>
