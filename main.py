@@ -40,15 +40,12 @@ questions = [
     "Religion should play a role in government policy-making."
 ]
 
-# List of Albanian municipalities
+# List of municipalities (example list, you may want to replace this with a more comprehensive list)
 municipalities = [
-    "Tirana", "Durrës", "Vlorë", "Elbasan", "Shkodër", "Fier", "Kamëz", "Korçë",
-    "Berat", "Lushnjë", "Kavajë", "Gjirokastër", "Sarandë", "Patos", "Lezhë",
-    "Kuçovë", "Kukës", "Pogradec", "Krujë", "Burrel", "Peshkopi", "Librazhd",
-    "Tepelenë", "Gramsh", "Poliçan", "Bulqizë", "Përmet", "Fushë-Krujë", "Ballsh",
-    "Rrogozhinë", "Shijak", "Laç", "Mamurras", "Cërrik", "Ersekë", "Peqin",
-    "Divjakë", "Selenicë", "Vorë", "Roskovec", "Bajram Curri", "Koplik", "Ura Vajgurore",
-    "Himarë", "Maliq", "Delvinë", "Pukë", "Memaliaj", "Këlcyrë", "Konispol"
+    "New York City", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia",
+    "San Antonio", "San Diego", "Dallas", "San Jose", "Austin", "Jacksonville",
+    "San Francisco", "Columbus", "Fort Worth", "Indianapolis", "Charlotte", "Seattle",
+    "Denver", "Washington D.C."
 ]
 
 # ... (keep all the existing functions)
